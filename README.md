@@ -95,11 +95,3 @@ Son observaciones que se alejan de forma notable del resto de los datos. En un b
 Porque pueden distorsionar medidas estadísticas como la media y la desviación estándar, sesgar los parámetros que aprende el modelo (especialmente en algoritmos sensibles a la escala de los datos, como la regresión lineal o KNN), provocar que el modelo se ajuste a casos extremos poco representativos (un tipo de sobreajuste) y, en consecuencia, reducir su capacidad de generalizar correctamente sobre datos nuevos.
 
 ---
-
-## Estructura del repositorio
-
-```
-.
-├── README.md                                 # Respuestas conceptuales y de análisis (este archivo)
-└── taller_numpy_matplotlib_seaborn.ipynb     # Código de todos los ejercicios, listo para Colab
-```

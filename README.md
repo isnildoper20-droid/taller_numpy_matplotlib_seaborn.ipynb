@@ -1,97 +1,158 @@
-# taller_numpy_matplotlib_seaborn.ipynb
-# Taller de IA – NumPy, Matplotlib y Seaborn
+# Taller Práctico No. 4 — Librerías NumPy, Matplotlib y Seaborn
 
----
+**Universidad del Pacífico — Programa de Ingeniería de Sistemas**
+**Asignatura: Inteligencia Artificial — Semestre 8, corte II**
+**Caso de estudio seleccionado: CASO 2 — Control de Calidad en una Planta de Producción**
 
-## PARTE I – Investigación y Análisis
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jeffer301/INTELIGENCIA-ARTIFICIAL--JEFFERSON-VALENCIA/blob/main/taller_practico_librerias_numpy_matplotlib_seaborn/Taller_NumPy_Matplotlib_Seaborn.ipynb)
+[![Ver Notebook en GitHub](https://img.shields.io/badge/GitHub-Ver%20Notebook-181717?style=flat&logo=github&logoColor=white)](https://github.com/jeffer301/INTELIGENCIA-ARTIFICIAL--JEFFERSON-VALENCIA/blob/main/taller_practico_librerias_numpy_matplotlib_seaborn/Taller_NumPy_Matplotlib_Seaborn.ipynb)
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat&logo=python&logoColor=white)
+![NumPy](https://img.shields.io/badge/NumPy-013243?style=flat&logo=numpy&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-150458?style=flat&logo=pandas&logoColor=white)
+![Matplotlib](https://img.shields.io/badge/Matplotlib-11557C?style=flat)
+![Seaborn](https://img.shields.io/badge/Seaborn-65A6CE?style=flat)
 
-### Actividad 1. Investigación conceptual
+> 🔗 **Abrir y ejecutar el taller directamente:** haz clic en el botón **"Open In Colab"** de arriba
+> para correr el notebook en la nube, sin instalar nada en tu computador.
 
-#### NumPy
+## 👥 Integrantes
 
-**1. ¿Qué es NumPy?**
-Es la librería fundamental de Python para computación numérica. Provee el objeto `ndarray` (arreglo n‑dimensional) y un conjunto extenso de funciones matemáticas para operar de forma rápida sobre grandes volúmenes de datos numéricos.
+| Nombre |
+|--------|
+| Jefferson Manuel Valencia Riascos |
+| Isnildo Equia Perteaga |
+| Sebastian Rojas Cabrera |
+| Yeison Stiven Lozano Angulo |
 
-**2. ¿Por qué NumPy es más eficiente que las listas tradicionales de Python?**
-Porque almacena los datos en bloques contiguos de memoria, todos del mismo tipo, en lugar de objetos Python independientes y dispersos como hacen las listas. Además, sus operaciones están implementadas en C y se ejecutan de forma **vectorizada** (aplicadas a todo el arreglo de una sola vez), evitando los bucles `for` explícitos de Python, que son mucho más lentos.
+## 1. Contexto
 
-**3. ¿Qué es un ndarray?**
-Es la estructura de datos central de NumPy: un arreglo homogéneo (todos sus elementos del mismo tipo) de N dimensiones, con una forma (`shape`) y un tipo de dato (`dtype`) definidos, sobre el cual se pueden aplicar operaciones matemáticas de manera eficiente.
+Una empresa manufacturera produce piezas metálicas y desea analizar los factores que influyen en
+los defectos de fabricación, con el fin de ajustar sus parámetros de producción y reducir el
+porcentaje de piezas defectuosas.
 
-**4. ¿Qué relación existe entre NumPy y el álgebra lineal?**
-NumPy es, en la práctica, el motor de álgebra lineal de Python: representa vectores y matrices como `ndarray` y, a través del submódulo `numpy.linalg`, ofrece operaciones como multiplicación de matrices, transposición, determinante, inversa y cálculo de autovalores/autovectores, que son la base matemática de la mayoría de los algoritmos de Machine Learning y Deep Learning.
+## 2. Generación de Datos Sintéticos
 
-**5. ¿Cómo utilizan los modelos de Deep Learning las matrices de NumPy?**
-Los datos de entrada, los pesos, los sesgos (bias) y las salidas de una red neuronal se representan como matrices o tensores. El paso hacia adelante (forward propagation) y el ajuste de pesos (backpropagation) se calculan mediante multiplicaciones de matrices y operaciones vectorizadas, exactamente el tipo de cálculo que NumPy resuelve de forma eficiente (los frameworks como TensorFlow o PyTorch extienden esta misma idea, pero ejecutándola en GPU).
+Se generó un dataset sintético de **500 registros** utilizando `numpy.random` (semilla fija
+`np.random.seed(42)` para reproducibilidad), con las siguientes variables:
 
-#### Matplotlib
+| Variable | Tipo | Generación |
+|---|---|---|
+| Temperatura de Producción | Numérica | `np.random.normal(180, 15, n)` — valor óptimo ≈180°C |
+| Presión de Máquina | Numérica | `np.random.normal(50, 8, n)` — valor óptimo ≈50 psi |
+| Tiempo de Operación | Numérica | `np.random.uniform(1, 12, n)` horas |
+| Velocidad de Producción | Numérica | `np.random.normal(100, 20, n)` — valor óptimo ≈100 u/h |
+| Defectuosa | Categórica (Sí/No) | Probabilidad condicionada a la desviación de temperatura y velocidad respecto a su valor óptimo |
 
-**6. ¿Qué es Matplotlib?**
-Es la librería de visualización de datos más usada en Python; permite crear gráficos estáticos, animados e interactivos a partir de datos numéricos.
+El código completo de generación está en la sección 3 del notebook (`Taller_NumPy_Matplotlib_Seaborn.ipynb`).
 
-**7. ¿Qué tipos de gráficos permite construir?**
-Gráficos de líneas, de barras, de dispersión (scatter), histogramas, diagramas de caja (boxplots), gráficos circulares (pie charts), gráficos de superficie/3D, mapas de contorno, entre otros.
+## 3. Análisis Estadístico
 
-**8. ¿Por qué la visualización de datos es importante en IA?**
-Porque permite comprender visualmente patrones, tendencias, distribuciones y relaciones entre variables que serían muy difíciles de detectar solo mirando números en una tabla. También ayuda a comunicar resultados, detectar errores o anomalías en los datos y respaldar decisiones sobre qué técnica de modelado usar.
+Se calcularon, para cada variable numérica: **media, mediana, moda, desviación estándar, varianza,
+mínimo y máximo**, usando NumPy/SciPy. La temperatura promedio resulta cercana a 180°C, confirmando
+que el proceso opera en torno al punto óptimo, y su dispersión (desviación estándar).
 
-**9. ¿Cómo ayuda Matplotlib en el análisis exploratorio de datos (EDA)?**
-Permite graficar rápidamente la distribución de cada variable, la relación entre variables, posibles valores atípicos y tendencias, lo cual orienta el preprocesamiento (limpieza, normalización, selección de variables) antes de entrenar cualquier modelo.
+## 4. Visualización de Datos 
 
-#### Seaborn
+El notebook incluye **7 visualizaciones**, cada una con su interpretación:
 
-**10. ¿Qué es Seaborn?**
-Es una librería de visualización estadística construida sobre Matplotlib. Ofrece una interfaz de alto nivel para crear gráficos atractivos e informativos con menos líneas de código, integrándose de forma nativa con `pandas`.
+1. Histograma de temperatura de producción <br>
 
-**11. ¿Qué ventajas ofrece frente a Matplotlib?**
-Sintaxis más simple para gráficos estadísticos complejos, estilos visuales más cuidados por defecto, integración directa con `DataFrames` de pandas, y funciones especializadas listas para usar (como `heatmap`, `boxplot`, `pairplot`, `violinplot`) que en Matplotlib puro requerirían mucho más código.
+<img width="689" height="360" alt="image" src="https://github.com/user-attachments/assets/d250fef4-e6f6-4556-b198-042c7514e6eb" />
 
-**12. ¿Qué son los mapas de calor (Heatmaps)?**
-Son representaciones gráficas de una matriz de valores en las que cada celda se colorea según su magnitud. Permiten identificar de un vistazo qué valores son altos, bajos o intermedios, siendo muy útiles para visualizar matrices de correlación.
+2. Histograma de presión de máquina <br>
 
-**13. ¿Por qué las matrices de correlación son importantes en Machine Learning?**
-Porque permiten detectar qué variables están relacionadas linealmente entre sí, identificar **multicolinealidad** (variables redundantes que aportan la misma información), y apoyar la selección de las características (features) más relevantes para el modelo, evitando inestabilidad o sobreajuste (overfitting).
+<img width="563" height="358" alt="image" src="https://github.com/user-attachments/assets/2fc5a3d0-e442-4012-a184-0c4695f53591" />
 
----
+3. Gráfico de barras de piezas defectuosas vs sanas <br> <img width="553" height="353" alt="image" src="https://github.com/user-attachments/assets/7a4ae129-f432-4792-865c-5093e52ebbb0" />
 
-## Ejercicios guía – Preguntas de análisis
+4. Heatmap de correlación (Seaborn) <br>
+<img width="663" height="342" alt="image" src="https://github.com/user-attachments/assets/20f7c6ae-a11d-41eb-a11b-12430c5234ff" />
 
-### 2. Operaciones matemáticas
+5. Boxplot de temperatura <br>
+<img width="502" height="358" alt="image" src="https://github.com/user-attachments/assets/771c12d2-f59f-48e6-bc99-faa22a7ffc02" />
 
-**¿Qué representa la desviación estándar?**
-Es una medida de dispersión que indica, en promedio, cuánto se alejan los valores individuales de un conjunto de datos respecto a su media. Una desviación pequeña indica datos muy agrupados alrededor del promedio; una desviación grande indica datos muy dispersos.
+6. Pairplot de variables coloreado por condición de la pieza (Seaborn) <br>
+<img width="830" height="742" alt="image" src="https://github.com/user-attachments/assets/8d025c77-aa8f-4a72-a684-8e2731dde0b3" />
 
-**¿Por qué es importante conocer la dispersión de los datos?**
-Porque dos conjuntos de datos pueden tener el mismo promedio y comportarse de forma muy distinta. Conocer la dispersión permite entender qué tan confiable o representativo es ese promedio, detectar variabilidad excesiva o valores atípicos, y es clave para decisiones como la normalización/escalado de variables antes de entrenar un modelo.
+7. Boxplot comparativo de temperatura según defecto <br>
 
-### 3. Generación de datos aleatorios (distribución normal)
+ <img width="608" height="360" alt="image" src="https://github.com/user-attachments/assets/b26fa42c-07c4-4988-8867-4a0b1c969187" />
 
-**¿Qué significa distribución normal?**
-Es una distribución de probabilidad simétrica con forma de campana (campana de Gauss), en la que la mayoría de los valores se concentran cerca de la media y la probabilidad de observar un valor disminuye simétricamente a medida que se aleja de ella. Queda completamente descrita por dos parámetros: la media (`loc`) y la desviación estándar (`scale`).
 
-**¿Por qué muchos algoritmos asumen distribuciones aproximadamente normales?**
-Porque, según el **teorema del límite central**, muchos fenómenos naturales y errores de medición tienden a aproximarse a una distribución normal cuando se combinan muchas variables independientes. Asumir normalidad simplifica los supuestos matemáticos de varios algoritmos (por ejemplo, regresión lineal, que asume residuos normalmente distribuidos) y permite usar propiedades estadísticas bien conocidas para hacer inferencias, calcular intervalos de confianza o detectar valores atípicos.
 
-### 4. Matplotlib – Gráfico de líneas (concepto a investigar)
+## 5. Análisis Exploratorio
 
-**¿Qué es el "accuracy" y qué es una "época" en el entrenamiento de un modelo?**
-- **Época (epoch):** una pasada completa del algoritmo de entrenamiento por todo el conjunto de datos de entrenamiento. Entrenar "8 épocas" significa que el modelo vio el dataset completo 8 veces, ajustando sus parámetros en cada pasada.
-- **Accuracy (precisión/exactitud):** es una métrica que mide el porcentaje de predicciones correctas que hace el modelo sobre el total de predicciones realizadas. En el gráfico del ejercicio, se observa cómo el accuracy va aumentando a medida que avanzan las épocas, lo cual indica que el modelo está aprendiendo (mejorando su desempeño) con el entrenamiento.
+**Hallazgos:**
+- Las piezas defectuosas muestran, en promedio, una mayor desviación respecto al valor óptimo de
+  temperatura y de velocidad que las piezas sanas, aunque ambas relaciones son débiles
+  (correlación ≈ 0.06 para temperatura y ≈ 0.13 para velocidad).
+- La presión de máquina y el tiempo de operación no muestran una asociación relevante con los
+  defectos (correlación ≈ 0.04 y cercana a 0 respectivamente).
+- Visualmente, el pairplot y los boxplots comparativos no permiten distinguir con claridad a las
+  piezas defectuosas de las sanas, principalmente debido al desbalance entre clases del dataset
+  (69 piezas defectuosas frente a 431 sanas).
 
-### 5. Histograma
+**Relaciones entre variables:** no se encontraron relaciones lineales fuertes entre las variables
+del proceso entre sí (todas las correlaciones cruzadas están entre -0.08 y 0.05), lo cual es
+coherente con el hecho de que fueron generadas de forma independiente. La relación más relevante
+del análisis es la que existe entre la desviación de temperatura/velocidad respecto a sus valores
+óptimos y la probabilidad de defecto, aunque esta relación es moderada y no determinante por sí sola.
 
-**¿Qué representa un histograma?**
-Es una representación gráfica de la distribución de frecuencias de una variable numérica: el rango de valores se divide en intervalos (bins) y se muestra, mediante barras, cuántos datos caen dentro de cada intervalo.
+**Variable más relevante:** la Velocidad de Producción (correlación ≈ 0.13), seguida de la
+Temperatura de Producción (correlación ≈ 0.06).
 
-**¿Qué utilidad tiene para comprender un dataset?**
-Permite ver de forma inmediata la forma de la distribución de una variable (simétrica, sesgada hacia un lado, con uno o varios picos), identificar dónde se concentran los datos, detectar posibles valores atípicos y evaluar si una variable se aproxima o no a una distribución conocida (como la normal), lo cual influye en qué técnicas de preprocesamiento o modelado conviene usar.
+## 6. Conclusiones
 
-### 8. Boxplot
+1. Las piezas defectuosas presentan, en promedio, una mayor desviación respecto al valor óptimo
+   de temperatura (180°C) que las piezas sanas, aunque esta relación es débil (correlación ≈ 0.06),
+   por lo que la temperatura por sí sola no explica completamente la aparición de defectos.
+2. La velocidad de producción extrema muestra la asociación más clara con los defectos entre las
+   variables analizadas (correlación ≈ 0.13), siendo el factor individual más relevante del proceso.
+3. La presión de máquina, dentro del rango analizado, prácticamente no muestra relación con la
+   aparición de defectos (correlación ≈ 0.04).
+4. El pairplot y el boxplot comparativo no permiten distinguir visualmente, de forma clara, a las
+   piezas defectuosas de las sanas, debido al desbalance entre clases (69 piezas defectuosas frente
+   a 431 sanas); esto confirma que ninguna variable por sí sola separa completamente ambos grupos.
+5. El control simultáneo de temperatura y velocidad parece ser más efectivo para reducir defectos
+   que el control aislado de una sola variable, ya que ambas aportan información relevante, aunque
+   de forma moderada y no determinante.
 
-**¿Qué son los valores atípicos (Outliers)?**
-Son observaciones que se alejan de forma notable del resto de los datos. En un boxplot suelen definirse como los valores que caen fuera del rango formado por 1.5 veces el rango intercuartílico (IQR) por encima del tercer cuartil o por debajo del primer cuartil.
+## 7. Recomendaciones Empresariales
 
-**¿Por qué pueden afectar el entrenamiento de un modelo?**
-Porque pueden distorsionar medidas estadísticas como la media y la desviación estándar, sesgar los parámetros que aprende el modelo (especialmente en algoritmos sensibles a la escala de los datos, como la regresión lineal o KNN), provocar que el modelo se ajuste a casos extremos poco representativos (un tipo de sobreajuste) y, en consecuencia, reducir su capacidad de generalizar correctamente sobre datos nuevos.
+1. Implementar un sistema de monitoreo en tiempo real de temperatura y velocidad, con alertas
+   cuando se alejen del rango óptimo.
+2. Revisar y calibrar periódicamente las máquinas asociadas a los lotes con temperaturas atípicas.
+3. Establecer rangos de control estadístico de proceso (SPC) para temperatura y velocidad,
+   deteniendo la producción cuando se excedan los límites definidos.
 
----
+## 8. Reflexión de IA
+
+¿Cómo podrían utilizarse técnicas de Machine Learning o Inteligencia Artificial para automatizar
+la toma de decisiones en este caso?
+
+Podríamos entrenar modelos de Inteligencia Artificial dependiendo del método de clasificación
+(árboles de decisión, random forest o redes neuronales) que nos interese elegir, para que estos
+predigan la probabilidad de que una pieza resulte defectuosa usando los datos de temperatura,
+presión, tiempo y velocidad registrados durante su fabricación. Estos modelos podrían activar
+alertas automáticas o incluso detener la línea de producción casi en tiempo real cuando se detecte
+que se cumplen los parámetros asociados a un alto riesgo de defecto, lo cual reduciría el
+desperdicio de materiales y mejoraría la eficiencia del control de calidad.
+
+## 9. Librerías utilizadas
+
+- `numpy` — generación de datos y cálculos estadísticos.
+- `pandas` — estructuración de datos en DataFrame.
+- `matplotlib` — histogramas, barras, boxplots.
+- `seaborn` — heatmap, boxplot, pairplot.
+- `scipy.stats` — cálculo de la moda.
+
+## 10. Cómo ejecutar
+
+**Opción 1 — En la nube (recomendado):** haz clic en el badge **Open In Colab** al inicio de este README.
+
+**Opción 2 — Localmente:**
+```bash
+pip install numpy pandas matplotlib seaborn scipy jupyter
+jupyter notebook Taller_NumPy_Matplotlib_Seaborn.ipynb
+```
+Ejecutar todas las celdas en orden (`Kernel > Restart & Run All`).
